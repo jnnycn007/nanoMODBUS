@@ -242,14 +242,14 @@ nmbs_error nmbs_create(nmbs_t* nmbs, const nmbs_platform_conf* platform_conf) {
     if (!platform_conf->read || !platform_conf->write)
         return NMBS_ERROR_INVALID_ARGUMENT;
 
+    nmbs->platform = *platform_conf;
+
     if (!platform_conf->flush) {
         nmbs->platform.flush = flush;
     }
     else {
         nmbs->platform.flush = platform_conf->flush;    // allow custom flush implementation
     }
-
-    nmbs->platform = *platform_conf;
 
     return NMBS_ERROR_NONE;
 }
