@@ -165,7 +165,7 @@ typedef struct nmbs_platform_conf {
                      void* arg); /*!< Bytes write transport function pointer */
     uint16_t (*crc_calc)(const uint8_t* data, uint32_t length,
                          void* arg); /*!< CRC calculation function pointer. Optional */
-    int32_t (*flush)(nmbs_t* nmbs);
+    void (*flush)(nmbs_t* nmbs, void* arg);
     void* arg;            /*!< User data, will be passed to functions above */
     uint32_t initialized; /*!< Reserved, workaround for older user code not calling nmbs_platform_conf_create() */
 } nmbs_platform_conf;
