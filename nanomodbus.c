@@ -281,9 +281,9 @@ void nmbs_set_platform_arg(nmbs_t* nmbs, void* arg) {
 uint16_t nmbs_crc_calc(const uint8_t* data, uint32_t length, void* arg) {
     NMBS_UNUSED_PARAM(arg);
     uint16_t crc = 0xFFFF;
-    for (uint32_t i = 0; i < length; i++) {
+    for (uint_fast32_t i = 0; i < length; i++) {
         crc ^= (uint16_t) data[i];
-        for (int j = 8; j != 0; j--) {
+        for (uint_fast8_t j = 8; j != 0; j--) {
             if ((crc & 0x0001) != 0) {
                 crc >>= 1;
                 crc ^= 0xA001;
@@ -560,7 +560,7 @@ static nmbs_error recv_read_discrete_res(nmbs_t* nmbs, nmbs_bitfield values) {
         return err;
 
     NMBS_DEBUG_PRINT("coils ");
-    for (int i = 0; i < coils_bytes; i++) {
+    for (uint_fast8_t i = 0; i < coils_bytes; i++) {
         const uint8_t coil = get_1(nmbs);
         if (values)
             values[i] = coil;
@@ -599,8 +599,8 @@ static nmbs_error recv_read_registers_res(nmbs_t* nmbs, uint16_t quantity, uint1
         return err;
 
     NMBS_DEBUG_PRINT("regs ");
-    for (int i = 0; i < registers_bytes / 2; i++) {
-        uint16_t reg = get_2(nmbs);
+    for (uint_fast8_t i = 0; i < registers_bytes / 2; i++) {
+        const uint16_t reg = get_2(nmbs);
         if (registers)
             registers[i] = reg;
         NMBS_DEBUG_PRINT("%d ", reg);
@@ -863,7 +863,7 @@ nmbs_error recv_read_device_identification_res(nmbs_t* nmbs, uint8_t buffers_cou
         *next_object_id_out = next_object_id;
 
     uint8_t res_size_left = 253 - 7;
-    for (int i = 0; i < objects_count; i++) {
+    for (uint_fast8_t i = 0; i < objects_count; i++) {
         err = recv(nmbs, 2);
         if (err != NMBS_ERROR_NONE)
             return err;
@@ -936,7 +936,7 @@ static nmbs_error handle_read_discrete(nmbs_t* nmbs,
             }
 
             if (!nmbs->msg.broadcast) {
-                uint8_t discrete_bytes = (quantity + 7) / 8;
+                const uint8_t discrete_bytes = (quantity + 7) / 8;
                 put_res_header(nmbs, 1 + discrete_bytes);
 
                 put_1(nmbs, discrete_bytes);
@@ -944,7 +944,7 @@ static nmbs_error handle_read_discrete(nmbs_t* nmbs,
                 NMBS_DEBUG_PRINT("b %d\t", discrete_bytes);
 
                 NMBS_DEBUG_PRINT("coils ");
-                for (int i = 0; i < discrete_bytes; i++) {
+                for (uint_fast8_t i = 0; i < discrete_bytes; i++) {
                     put_1(nmbs, bitfield[i]);
                     NMBS_DEBUG_PRINT("%d ", bitfield[i]);
                 }
@@ -1010,7 +1010,7 @@ static nmbs_error handle_read_registers(nmbs_t* nmbs,
                 NMBS_DEBUG_PRINT("b %d\t", regs_bytes);
 
                 NMBS_DEBUG_PRINT("regs ");
-                for (int i = 0; i < quantity; i++) {
+                for (uint_fast16_t i = 0; i < quantity; i++) {
                     put_2(nmbs, regs[i]);
                     NMBS_DEBUG_PRINT("%d ", regs[i]);
                 }
@@ -1173,7 +1173,7 @@ static nmbs_error handle_write_multiple_coils(nmbs_t* nmbs) {
 
     const uint16_t address = get_2(nmbs);
     const uint16_t quantity = get_2(nmbs);
-    uint8_t coils_bytes = get_1(nmbs);
+    const uint8_t coils_bytes = get_1(nmbs);
 
     NMBS_DEBUG_PRINT("a %d\tq %d\tb %d\tcoils ", address, quantity, coils_bytes);
 
@@ -1185,7 +1185,7 @@ static nmbs_error handle_write_multiple_coils(nmbs_t* nmbs) {
         return err;
 
     nmbs_bitfield coils = {0};
-    for (int i = 0; i < coils_bytes; i++) {
+    for (uint_fast8_t i = 0; i < coils_bytes; i++) {
         coils[i] = get_1(nmbs);
         NMBS_DEBUG_PRINT("%d ", coils[i]);
     }
@@ -1262,7 +1262,7 @@ static nmbs_error handle_write_multiple_registers(nmbs_t* nmbs) {
         return NMBS_ERROR_INVALID_REQUEST;
 
     uint16_t registers[0x007B];
-    for (int i = 0; i < registers_bytes / 2; i++) {
+    for (uint_fast8_t i = 0; i < registers_bytes / 2; i++) {
         registers[i] = get_2(nmbs);
         NMBS_DEBUG_PRINT("%d ", registers[i]);
     }
@@ -1564,7 +1564,7 @@ static nmbs_error handle_read_write_registers(nmbs_t* nmbs) {
 #else
     uint16_t registers[byte_count_write / 2];
 #endif
-    for (int i = 0; i < byte_count_write / 2; i++) {
+    for (uint_fast8_t i = 0; i < byte_count_write / 2; i++) {
         registers[i] = get_2(nmbs);
         NMBS_DEBUG_PRINT("%d ", registers[i]);
     }
@@ -1624,7 +1624,7 @@ static nmbs_error handle_read_write_registers(nmbs_t* nmbs) {
             NMBS_DEBUG_PRINT("b %d\t", regs_bytes);
 
             NMBS_DEBUG_PRINT("regs ");
-            for (int i = 0; i < read_quantity; i++) {
+            for (uint_fast16_t i = 0; i < read_quantity; i++) {
                 put_2(nmbs, regs[i]);
                 NMBS_DEBUG_PRINT("%d ", regs[i]);
             }
