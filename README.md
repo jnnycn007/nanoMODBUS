@@ -3,8 +3,8 @@
 **If you found this library useful, buy me a coffee on**
 [<img src='https://storage.ko-fi.com/cdn/brandasset/logo_white_stroke.png' width='80'>](https://ko-fi.com/B0B2LK779)
 
-nanoMODBUS is a small C library that implements the Modbus protocol. It is especially useful in embedded and
-resource-constrained systems like microcontrollers.  
+nanoMODBUS is a small C library that implements the Modbus protocol. It is especially useful in
+embedded and resource-constrained systems like microcontrollers.  
 Its main features are:
 
 - Compact size
@@ -122,12 +122,13 @@ target_link_libraries(your_program nanomodbus)
 
 ## API reference
 
-API reference is available in the repository's [GitHub Pages](https://debevv.github.io/nanoMODBUS/nanomodbus_8h.html).
+API reference is available in the
+repository's [GitHub Pages](https://debevv.github.io/nanoMODBUS/nanomodbus_8h.html).
 
 ## Platform functions
 
-nanoMODBUS requires the implementation of 2 platform-specific functions, defined as function pointers when creating a
-client/server instance.
+nanoMODBUS requires the implementation of 2 platform-specific functions, defined as function
+pointers when creating a client/server instance.
 
 ### Transport read/write
 
@@ -136,25 +137,35 @@ int32_t read(uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg);
 int32_t write(const uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg);
 ```
 
-These are your platform-specific functions that read/write data to/from a serial port or a TCP connection.  
+These are your platform-specific functions that read/write data to/from a serial port or a TCP
+connection.  
 Both methods should block until either:
 
 - `count` bytes of data are read/written
 - the byte timeout, with `byte_timeout_ms >= 0`, expires
 
 A value `< 0` for `byte_timeout_ms` means infinite timeout.  
-With a value `== 0` for `byte_timeout_ms`, the method should read/write once in a non-blocking fashion and return
-immediately.
+With a value `== 0` for `byte_timeout_ms`, the method should read/write once in a non-blocking
+fashion and return immediately.
 
 Their return value should be the number of bytes actually read/written, or `< 0` in case of error.  
-A return value between `0` and `count - 1` will be treated as if a timeout occurred on the transport side. All other
-values will be treated as transport errors.
+A return value between `0` and `count - 1` will be treated as if a timeout occurred on the transport
+side. All other values will be treated as transport errors.
+
+### Optional platform functions
+
+Additionally, nanoMODBUS allows the definition of these optional platform functions:
+
+- `crc_calc`: override the default nanoMODBUS CRC calculation function.
+- `flush`: override the default nanoMODBUS serial/TCP connection flush.
 
 ### Callbacks and platform functions arguments
 
-Server callbacks and platform functions can access arbitrary user data through their `void* arg` argument. The argument
-is useful, for example, to pass the connection a function should operate on.  
-Their initial values can be set via the `nmbs_set_callbacks_arg` and `nmbs_set_platform_arg` API methods.
+Server callbacks and platform functions can access arbitrary user data through their `void* arg`
+argument. The argument is useful, for example, to pass the connection a function should operate
+on.  
+Their initial values can be set via the `nmbs_set_callbacks_arg` and `nmbs_set_platform_arg` API
+methods.
 
 ## Tests and examples
 
@@ -166,7 +177,8 @@ cmake ..
 make
 ```
 
-Please refer to `examples/arduino/README.md` for more info about building and running Arduino examples.
+Please refer to `examples/arduino/README.md` for more info about building and running Arduino
+examples.
 
 ## Misc
 
@@ -187,5 +199,6 @@ Please refer to `examples/arduino/README.md` for more info about building and ru
         - `NMBS_SERVER_READ_WRITE_REGISTERS_DISABLED`
         - `NMBS_SERVER_READ_DEVICE_IDENTIFICATION_DISABLED`
     - `NMBS_STRERROR_DISABLED` to disable the code that converts `nmbs_error`s to strings
-    - `NMBS_BITFIELD_MAX` to set the size of the `nmbs_bitfield` type, used to store coil values (default is `2000`)
+    - `NMBS_BITFIELD_MAX` to set the size of the `nmbs_bitfield` type, used to store coil values (
+      default is `2000`)
 - Debug prints about received and sent messages can be enabled by defining `NMBS_DEBUG`

@@ -151,7 +151,9 @@ typedef enum nmbs_transport {
  * A return value between `0` and `count - 1` will be treated as if a timeout occurred on the transport side. All other
  * values will be treated as transport errors.
  *
- * Additionally, an optional crc_calc() function can be defined to override the default nanoMODBUS CRC calculation function.
+ * Additionally, these optional functions can be defined:
+ * - `crc_calc`: override the default nanoMODBUS CRC calculation function.
+ * - `flush`: override the default nanoMODBUS serial/TCP connection flush.
  *
  * These methods accept a pointer to arbitrary user-data, which is the arg member of this struct.
  * After the creation of an instance it can be changed with nmbs_set_platform_arg().
@@ -163,9 +165,9 @@ typedef struct nmbs_platform_conf {
     int32_t (*write)(const uint8_t* buf, uint16_t count, int32_t byte_timeout_ms,
                      void* arg); /*!< Bytes write transport function pointer */
     uint16_t (*crc_calc)(const uint8_t* data, uint32_t length,
-                         void* arg); /*!< CRC calculation function pointer. Optional */
-    void (*flush)(nmbs_t* nmbs, void* arg);
-    void* arg;            /*!< User data, will be passed to functions above */
+                         void* arg);        /*!< CRC calculation function pointer. Optional */
+    void (*flush)(nmbs_t* nmbs, void* arg); /*!< Custom serial/TCP connection flush function pointer. Optional */
+    void* arg;                              /*!< User data, it will be passed to functions above */
     uint32_t initialized; /*!< Reserved, workaround for older user code not calling nmbs_platform_conf_create() */
 } nmbs_platform_conf;
 
